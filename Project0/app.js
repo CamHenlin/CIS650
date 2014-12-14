@@ -139,14 +139,14 @@ app.get('/transmit_token/:token', function(req, res) {
 			return;
 		}
 
-		var target = nodes[Math.floor(Math.random() * nodes.length)];
+		var target = lan + nodes[Math.floor(Math.random() * nodes.length)];
 		box.setContent('this node is sending to ' + target);
 		screen.render();
 
 		var options = {
-			host: lan + target,
+			host: target,
 			port: app.get('port'), // use our default port
-			path: '/trasnmit_token/' + token
+			path: '/transmit_token/' + token
 		};
 
 		var req = http.get(options, function(res) {
@@ -155,7 +155,7 @@ app.get('/transmit_token/:token', function(req, res) {
 				bodydata.push(data);
 			}).on('end', function() {
 				var body = Buffer.concat(bodydata);
-				box.setContent('this node just got rid of the token');
+				box.setContent('this node just got rid of the token by sending it to ' + target + ' got response ' + body);
 				box.style.bg = 'black';
 				screen.render();
 				// we now have a body object, should be "token received"
