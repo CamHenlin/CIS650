@@ -174,6 +174,11 @@ app.get('/transmit_token/:token', function(req, res) {
 	}, 5000);
 });
 
+box.on('click', function(data) {
+	box.style.bg = "blue";
+	screen.render();
+});
+
 // Quit on Escape, q, or Control-C.
 screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 	return process.exit(0);
