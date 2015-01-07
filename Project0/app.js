@@ -53,7 +53,7 @@ app.get('/do_get', function (req, res){
 	box.setContent("Get with query: " + the_body);
 	box.style.bg = 'green';	//green for get
 	screen.render();
-	res.json({"query": the_body, "id": my_group[my_index]});
+	res.json({"query": the_body, "id": JSON.stringify(my_group[my_index])});
 });
 
 // handle POST requests
@@ -63,7 +63,7 @@ app.post('/do_post', function(req, res) {
 	box.setContent("Post with body: " + the_body);
 	box.style.bg = 'blue';	//blue for post
 	screen.render();
-	res.json({"body": the_body, "id": my_group[my_index]});
+	res.json({"body": the_body, "id": JSON.stringify(my_group[my_index])});
 });
 
 // Quit on Escape, q, or Control-C.
@@ -76,3 +76,7 @@ box.focus();
 
 // Render the screen.
 screen.render();
+
+http.createServer(app).listen(app.get('port'), function(){
+	console.log("Express server listening on port " + app.get('port'));
+});
