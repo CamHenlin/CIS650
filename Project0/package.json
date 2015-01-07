@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "app.js",
 	"dependencies": {
-		"blessed": "^0.0.37",
-		"express": "^4.10.6",
+		"blessed": "0.0.37",
+		"express": "4.10.6",
 		"connect": "2.28.0",
 		"body-parser": "1.10.1"
 	},
