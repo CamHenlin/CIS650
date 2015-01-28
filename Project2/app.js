@@ -61,6 +61,7 @@ switch(my_job) {
 			} else {
 				res.json({"locked": false});
 			}
+			res.end();
 		});
 
 		// handle GET requests
@@ -75,6 +76,7 @@ switch(my_job) {
 			} else {
 				res.json({"unlocked": false});
 			}
+			res.end();
 		});
 
 		box.setContent('{center}Handling locks. Unlocked.{/center}');
@@ -87,20 +89,18 @@ switch(my_job) {
 		// handle GET requests
 		app.get('/getValue', function (req, res) {
 			var the_body = req.query;
-			var id = req.param(id);
-			console.log ( "get body: " + the_body );
-			box.setContent("Get with query: " + the_body);
-			box.style.bg = 'green';	//green for get
-			screen.render();
-			res.json({"value": value});
+			var id = req.body;
+			res.json({value: value});
+			res.end();
 		});
 
 		// handle POST requests
 		app.post('/setValue', function(req, res) {
-			value++;
+			value = req.body.value;
 
 			box.setContent('{center}Handling value increments. Current value is '+value+'.{/center}');
 			screen.render();
+			res.end();
 		});
 
 		box.setContent('{center}Handling value increments. Current value is '+value+'.{/center}');
@@ -111,11 +111,15 @@ switch(my_job) {
 	default:
 		// interacts with PI-1, read/write controller
 		var writeFunction = function(val) {
+			var headers = {
+				'Content-Type': 'application/json'
+			};
 			var options = {
 				host: '127.0.0.1', // will need to be changed if the lock system is running on another machine
 				path: '/setValue',
 				port: '3001',
-				method: 'POST'
+				method: 'POST',
+				headers: headers
 			};
 
 			callback = function(response) {
@@ -130,8 +134,8 @@ switch(my_job) {
 			};
 
 			var req = http.request(options, callback);
-
-			req.write("");
+			// console.log(JSON.stringify({"value": val++}));
+			req.write(JSON.stringify({"value": val++}));
 			req.end();
 		};
 
@@ -150,8 +154,8 @@ switch(my_job) {
 				});
 
 				response.on('end', function () {
-					console.log('r:'+str);
-					box.setContent('{center}Got lock and incrementing from.{/center}');
+					box.setContent('{center}Got lock and read value. Value is '+JSON.parse(str).value+'. Incrementing to '+parseInt(JSON.parse(str).value)+1+'.{/center}');
+					cb(parseInt(JSON.parse(str).value));
 					screen.render();
 				});
 			};
@@ -175,7 +179,7 @@ switch(my_job) {
 
 				response.on('end', function () {
 					if (JSON.parse(str).locked) {
-						writeFunction();
+						readFunction(writeFunction);
 					} else {
 						lockFunction();
 					}
@@ -201,6 +205,8 @@ switch(my_job) {
 
 				response.on('end', function () {
 					// nothing to actually do once we've released our lock
+					box.setContent('{center}Done.{/center}');
+					screen.render();
 				});
 			};
 
